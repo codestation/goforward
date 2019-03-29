@@ -54,9 +54,17 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 
 	cfg.Servers = append(cfg.Servers, sc)
 
+	var processors string
+	
+	if smtpConfig.debug {
+		processors = "HeadersParser|Hasher|Header|Debugger|Forwarder"
+	} else {
+		processors = "HeadersParser|Hasher|Header|Forwarder"
+	}
+
 	bcfg := backends.BackendConfig{
 		"save_workers_size":     3,
-		"save_process":          "HeadersParser|Hasher|Header|Debugger|Forwarder",
+		"save_process":          processors,
 		"validate_processors":   "Forwarder",
 		"log_received_mails":    true,
 		"primary_mail_host":     smtpConfig.host,
