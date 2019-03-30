@@ -28,7 +28,7 @@ steps:
         - CI_TAG=${DRONE_TAG}
         - BUILD_NUMBER=${DRONE_BUILD_NUMBER}
         - BUILD_COMMIT_SHORT=${DRONE_COMMIT_SHA:0:8}
-        - BUILD_STARTED=${DRONE_BUILD_STARTED}
+        - CI_BUILD_FINISHED=${DRONE_BUILD_FINISHED}
       registry: registry.megpoid.xyz
       username: admin
       password:

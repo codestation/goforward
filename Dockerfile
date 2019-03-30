@@ -14,7 +14,7 @@ RUN CGO_ENABLED=0 go build -o release/goforward \
    -X main.Version=${CI_TAG} \
    -X main.BuildNumber=${BUILD_NUMBER} \
    -X main.Commit=${BUILD_COMMIT_SHORT} \
-   -X main.BuildTime=${BUILD_STARTED}"
+   -X main.BuildTime=${CI_BUILD_FINISHED}"
 
 FROM alpine:3.9
 LABEL maintainer="codestation <codestation404@gmail.com>"
