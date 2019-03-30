@@ -42,20 +42,21 @@ type smtpConfig struct {
 
 func runSMTPServer(smtpConfig smtpConfig) error {
 	cfg := &guerrilla.AppConfig{
-		LogFile:      slog.OutputStdout.String(),
 		AllowedHosts: []string{smtpConfig.host},
+		LogFile:      slog.OutputStdout.String(),
 	}
 
 	sc := guerrilla.ServerConfig{
-		ListenInterface: smtpConfig.listen,
 		IsEnabled:       true,
 		Hostname:        smtpConfig.host,
+		MaxSize:         25 * 1024 * 1024,
+		ListenInterface: smtpConfig.listen,
 	}
 
 	cfg.Servers = append(cfg.Servers, sc)
 
 	var processors string
-	
+
 	if smtpConfig.debug {
 		processors = "HeadersParser|Hasher|Header|Debugger|Forwarder"
 	} else {

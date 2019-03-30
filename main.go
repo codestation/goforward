@@ -19,22 +19,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"megpoid.xyz/go/goforward/forward"
-)
-
-var (
-	// BuildTime indicates the date when the binary was built (set by -ldflags)
-	BuildTime string
-	// BuildCommit indicates the git commit of the build
-	BuildCommit string
-	// AppVersion indicates the application version
-	AppVersion = "0.1"
-	// BuildNumber indicates the compilation number
-	BuildNumber = "0"
 )
 
 func run(c *cli.Context) error {
@@ -47,7 +37,7 @@ func run(c *cli.Context) error {
 
 	cfg := smtpConfig{
 		listen:      c.String("listen"),
-		host:        c.String("host"),
+		host:        c.String("allowed-host"),
 		aliases:     c.String("aliases"),
 		credentials: c.String("credentials"),
 		token:       c.String("token"),
@@ -64,23 +54,30 @@ func initialize(c *cli.Context) error {
 
 	log.SetOutput(os.Stdout)
 
-	log.Infof("Starting goforward %s.%s", AppVersion, BuildNumber)
-
-	if len(BuildTime) > 0 {
-		log.Infof("Build Time: %s", BuildTime)
-	}
-
-	if len(BuildCommit) > 0 {
-		log.Infof("Build Commit: %s", BuildCommit)
-	}
+	log.WithFields(log.Fields{
+		"version":     Version,
+		"commit":      Commit,
+		"built":       BuildTime,
+		"compilation": BuildNumber,
+	}).Info("GoForward")
 
 	return nil
+}
+
+func printVersion(c *cli.Context) {
+	_, _ = fmt.Fprintf(c.App.Writer, `GoForward
+Version:      %s
+Git commit:   %s
+Built:        %s
+Compilation:  %s
+`, Version, Commit, BuildTime, BuildNumber)
 }
 
 func main() {
 	app := cli.NewApp()
 	app.Usage = "forwards email to a Gmail account"
-	app.Version = AppVersion + "." + BuildNumber
+	app.Version = Version
+	cli.VersionPrinter = printVersion
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -90,9 +87,9 @@ func main() {
 			EnvVar: "LISTEN",
 		},
 		cli.StringFlag{
-			Name:   "host, H",
-			Usage:  "primary mail host",
-			EnvVar: "HOST",
+			Name:   "allowed-host, H",
+			Usage:  "allowed host",
+			EnvVar: "ALLOWED_HOST",
 		},
 		cli.StringFlag{
 			Name:   "aliases, a",

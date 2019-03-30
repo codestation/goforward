@@ -1,5 +1,10 @@
+---
 kind: pipeline
-name: default
+name: linux-amd64
+
+platform:
+  os: linux
+  arch: amd64
 
 steps:
   - name: test
@@ -20,12 +25,18 @@ steps:
       tags: latest
       mirror: http://mirror:5000
       build_args:
+        - CI_TAG=${DRONE_TAG}
         - BUILD_NUMBER=${DRONE_BUILD_NUMBER}
         - BUILD_COMMIT_SHORT=${DRONE_COMMIT_SHA:0:8}
+        - BUILD_STARTED=${DRONE_BUILD_STARTED}
       registry: registry.megpoid.xyz
       username: admin
       password:
         from_secret: docker_password
+    when:
+      event:
+        - push
+        - tag
 
 trigger:
   branch:
