@@ -74,7 +74,10 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 				AlwaysOn:       false,
 				PrivateKeyFile: smtpConfig.privateKey,
 				PublicKeyFile:  smtpConfig.publicKey,
-				Protocols:      []string{"tls1.0", "tls1.3"}, //TODO: change minimal version to tls1.2
+				ClientAuthType: "NoClientCert",
+				Ciphers:        []string{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA"},
+				Protocols:      []string{"tls1.0", "tls1.2"},
+				//TODO: change minimal version to tls1.2 and max to tls1.3
 			}
 		}
 	}
