@@ -76,18 +76,17 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 				PublicKeyFile:            smtpConfig.publicKey,
 				ClientAuthType:           "NoClientCert",
 				PreferServerCipherSuites: true,
-				Curves:                   []string{"P256", "P384", "X25519"},
+				Curves:                   []string{"P256", "P384", "P521", "X25519"},
 				Ciphers: []string{
 					"TLS_FALLBACK_SCSV",
-					"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-					"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
 					"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-					"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-					"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
 					"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-					"TLS_RSA_WITH_AES_256_GCM_SHA384",
+					"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
 					"TLS_RSA_WITH_AES_128_GCM_SHA256",
-
+					"TLS_RSA_WITH_AES_256_GCM_SHA384",
 				},
 				Protocols: []string{"tls1.2"}, //TODO: add tls1.3
 			}

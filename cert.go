@@ -19,7 +19,6 @@
 package main
 
 import (
-	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -62,13 +61,19 @@ func pemBlockForKey(priv interface{}) (*pem.Block, error) {
 }
 
 func generateKeys(hostname, privPath, pubPath string) error {
-	priv, err := ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return errors.Wrap(err, "failed to generate private key")
 	}
 
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		return errors.Wrap(err, "failed to generate serial number")
+	}
+
 	template := x509.Certificate{
-		SerialNumber: big.NewInt(1),
+		SerialNumber: serialNumber,
 		Subject: pkix.Name{
 			Organization: []string{"GoForward"},
 			CommonName:   hostname,
@@ -86,13 +91,22 @@ func generateKeys(hostname, privPath, pubPath string) error {
 		return errors.Wrap(err, "failed to create certificate")
 	}
 
-	out := &bytes.Buffer{}
-	if err = pem.Encode(out, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
-		return errors.Wrap(err, "failed to encode certificate")
+	certOut, err := os.Create(pubPath)
+	if err != nil {
+		return errors.Wrapf(err, "failed to open %s for writing", pubPath)
 	}
 
-	if err = ioutil.WriteFile(pubPath, out.Bytes(), 0644); err != nil {
-		return errors.Wrap(err, "failed to create certificate file")
+	if err = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
+		return errors.Wrapf(err, "failed to write public key data to %s", pubPath)
+	}
+
+	if err := certOut.Close(); err != nil {
+		return errors.Wrapf(err, "error closing %s", pubPath)
+	}
+
+	keyOut, err := os.OpenFile(privPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return errors.Wrapf(err, "failed to open %s for writing", privPath)
 	}
 
 	blk, err := pemBlockForKey(priv)
@@ -100,14 +114,15 @@ func generateKeys(hostname, privPath, pubPath string) error {
 		return errors.Wrap(err, "failed to generate block for private key")
 	}
 
-	if err = pem.Encode(out, blk); err != nil {
+	if err = pem.Encode(keyOut, blk); err != nil {
 		os.Remove(pubPath)
-		return errors.Wrap(err, "failed to encode private key")
+		return errors.Wrapf(err, "failed to write private key to %s", privPath)
 	}
 
-	if err = ioutil.WriteFile(privPath, out.Bytes(), 0600); err != nil {
+	if err := keyOut.Close(); err != nil {
 		os.Remove(pubPath)
-		return errors.Wrap(err, "failed to create private key file")
+		os.Remove(privPath)
+		return errors.Wrapf(err, "error closing %s", privPath)
 	}
 
 	return nil
