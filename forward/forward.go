@@ -64,6 +64,7 @@ func newForwarder(config *forwardConfig) (*forwarder, error) {
 func aliasesmap(aliasesmap string) (map[string][]string, error) {
 	ret := make(map[string][]string, 0)
 	aliases := strings.Split(aliasesmap, ",")
+
 	for i := range aliases {
 		u := strings.Split(aliases[i], "=")
 		if len(u) != 2 {
@@ -74,9 +75,10 @@ func aliasesmap(aliasesmap string) (map[string][]string, error) {
 
 		for j := range names {
 			addresses := strings.Split(u[1], ":")
+			name := strings.ToLower(names[j])
 
 			for k := range addresses {
-				ret[names[j]] = append(ret[names[j]], addresses[k])
+				ret[name] = append(ret[name], addresses[k])
 			}
 		}
 	}
