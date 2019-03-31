@@ -70,14 +70,26 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 
 		if smtpConfig.privateKey != "" && smtpConfig.publicKey != "" {
 			sc.TLS = guerrilla.ServerTLSConfig{
-				StartTLSOn:     true,
-				AlwaysOn:       false,
-				PrivateKeyFile: smtpConfig.privateKey,
-				PublicKeyFile:  smtpConfig.publicKey,
-				ClientAuthType: "NoClientCert",
-				Ciphers:        []string{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA"},
-				Protocols:      []string{"tls1.0", "tls1.2"},
-				//TODO: change minimal version to tls1.2 and max to tls1.3
+				StartTLSOn:               true,
+				AlwaysOn:                 false,
+				PrivateKeyFile:           smtpConfig.privateKey,
+				PublicKeyFile:            smtpConfig.publicKey,
+				ClientAuthType:           "NoClientCert",
+				PreferServerCipherSuites: true,
+				Curves:                   []string{"P256", "P384", "P521", "X25519"},
+				Ciphers: []string{
+					"TLS_FALLBACK_SCSV",
+					"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+					"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+					"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+					"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+					"TLS_RSA_WITH_AES_256_GCM_SHA384",
+					"TLS_RSA_WITH_AES_128_GCM_SHA256",
+
+				},
+				Protocols: []string{"tls1.2"}, //TODO: add tls1.3
 			}
 		}
 	}

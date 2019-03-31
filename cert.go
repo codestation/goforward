@@ -73,6 +73,7 @@ func generateKeys(hostname, privPath, pubPath string) error {
 			Organization: []string{"GoForward"},
 			CommonName:   hostname,
 		},
+		DNSNames:              []string{hostname},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(10, 0, 0),
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
