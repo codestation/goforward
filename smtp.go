@@ -38,6 +38,9 @@ type smtpConfig struct {
 	credentials string
 	token       string
 	debug       bool
+	tls         bool
+	privateKey  string
+	publicKey   string
 }
 
 func runSMTPServer(smtpConfig smtpConfig) error {
@@ -51,6 +54,29 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 		Hostname:        smtpConfig.host,
 		MaxSize:         25 * 1024 * 1024,
 		ListenInterface: smtpConfig.listen,
+	}
+
+	if smtpConfig.tls {
+		if smtpConfig.privateKey == "" || smtpConfig.publicKey == "" {
+			log.Infof("TLS is set but the private and public keys were not specified, generating self-signed cert...")
+
+			if err := generateKeyPair(&smtpConfig); err != nil {
+				log.Infof("Failed to generate self signed keypair, disabling TLS")
+			} else {
+				defer os.Remove(smtpConfig.privateKey)
+				defer os.Remove(smtpConfig.publicKey)
+			}
+		}
+
+		if smtpConfig.privateKey != "" && smtpConfig.publicKey != "" {
+			sc.TLS = guerrilla.ServerTLSConfig{
+				StartTLSOn:     true,
+				AlwaysOn:       false,
+				PrivateKeyFile: smtpConfig.privateKey,
+				PublicKeyFile:  smtpConfig.publicKey,
+				Protocols:      []string{"tls1.0", "tls1.3"}, //TODO: change minimal version to tls1.2
+			}
+		}
 	}
 
 	cfg.Servers = append(cfg.Servers, sc)

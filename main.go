@@ -42,6 +42,9 @@ func run(c *cli.Context) error {
 		credentials: c.String("credentials"),
 		token:       c.String("token"),
 		debug:       c.Bool("debug"),
+		tls:         c.Bool("tls"),
+		privateKey:  c.String("private-key"),
+		publicKey:   c.String("public-key"),
 	}
 
 	return runSMTPServer(cfg)
@@ -112,6 +115,21 @@ func main() {
 			Name:   "request, r",
 			Usage:  "request oeauth token",
 			EnvVar: "REQUEST_TOKEN",
+		},
+		cli.BoolFlag{
+			Name:   "tls, t",
+			Usage:  "enable STARTTLS support",
+			EnvVar: "TLS",
+		},
+		cli.StringFlag{
+			Name:   "private-key, k",
+			Usage:  "private key path",
+			EnvVar: "PRIVATE_KEY_FILE",
+		},
+		cli.StringFlag{
+			Name:   "public-key, K",
+			Usage:  "public key path",
+			EnvVar: "PUBLIC_KEY_FILE",
 		},
 		cli.BoolFlag{
 			Name:   "debug, d",
