@@ -129,10 +129,10 @@ var Processor = func() backends.Decorator {
 
 					for i := range e.RcptTo {
 						addresses := forwarder.aliases[e.RcptTo[i].User]
+						message := makeMessage(e)
+						
 						for j := range addresses {
 							user := addresses[j]
-
-							message := makeMessage(e)
 							_, err = srv.Users.Messages.Import(user, message).Do()
 							if err != nil {
 								return backends.NewResult(fmt.Sprintf("554 Error: %s", err)), err
