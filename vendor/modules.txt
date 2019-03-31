@@ -2,7 +2,7 @@
 cloud.google.com/go/compute/metadata
 # github.com/asaskevich/EventBus v0.0.0-20180315140547-d46933a94f05
 github.com/asaskevich/EventBus
-# github.com/flashmob/go-guerrilla v0.0.0-20190130124619-cb550348c44e
+# github.com/flashmob/go-guerrilla v0.0.0-20190130124619-cb550348c44e => github.com/codestation/go-guerrilla v0.0.0-20190331145559-b860b81baef5
 github.com/flashmob/go-guerrilla
 github.com/flashmob/go-guerrilla/backends
 github.com/flashmob/go-guerrilla/log
