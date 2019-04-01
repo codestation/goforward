@@ -26,6 +26,7 @@ import (
 	"github.com/flashmob/go-guerrilla/mail"
 	"github.com/flashmob/go-guerrilla/response"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 type forwardConfig struct {
@@ -127,15 +128,17 @@ var Processor = func() backends.Decorator {
 						return backends.NewResult(fmt.Sprintf("554 Error: %s", err)), err
 					}
 
+					message := makeMessage(e)
+					log.Debugf("BASE64 message: %s", message.Raw)
+
 					for i := range e.RcptTo {
 						addresses := forwarder.aliases[e.RcptTo[i].User]
-						message := makeMessage(e)
-						
+
 						for j := range addresses {
 							user := addresses[j]
 							_, err = srv.Users.Messages.Import(user, message).Do()
 							if err != nil {
-								return backends.NewResult(fmt.Sprintf("554 Error: %s", err)), err
+								log.Warningf("failed to import the message to '%s': %v", user, err)
 							}
 						}
 					}
