@@ -21,11 +21,14 @@ package main
 import (
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/flashmob/go-guerrilla"
 	"github.com/flashmob/go-guerrilla/backends"
 	slog "github.com/flashmob/go-guerrilla/log"
+	"github.com/flashmob/go-guerrilla/tests/testcert"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"megpoid.xyz/go/goforward/forward"
@@ -59,10 +62,14 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 	if smtpConfig.tls {
 		if smtpConfig.privateKey == "" || smtpConfig.publicKey == "" {
 			log.Infof("TLS is set but the private and public keys were not specified, generating self-signed cert...")
+			certPath := os.TempDir() + string(os.PathSeparator)
+			err := testcert.GenerateCert(smtpConfig.host, "", time.Hour*24*365*10, false, 0, "P256", certPath)
 
-			if err := generateKeyPair(&smtpConfig); err != nil {
+			if err != nil {
 				log.Infof("Failed to generate self signed keypair, disabling TLS")
 			} else {
+				smtpConfig.publicKey = filepath.Join(certPath, smtpConfig.host+".cert.pem")
+				smtpConfig.privateKey = filepath.Join(certPath, smtpConfig.host+".key.pem")
 				defer os.Remove(smtpConfig.privateKey)
 				defer os.Remove(smtpConfig.publicKey)
 			}
@@ -78,15 +85,13 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 				PreferServerCipherSuites: true,
 				Curves:                   []string{"P256", "P384", "P521", "X25519"},
 				Ciphers: []string{
-					"TLS_FALLBACK_SCSV",
-					"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-					"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
 					"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-					"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-					"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
 					"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-					"TLS_RSA_WITH_AES_128_GCM_SHA256",
-					"TLS_RSA_WITH_AES_256_GCM_SHA384",
+					"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+					"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+					"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+					"TLS_FALLBACK_SCSV",
 				},
 				Protocols: []string{"tls1.2"}, //TODO: add tls1.3
 			}
