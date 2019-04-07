@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/asaskevich/EventBus v0.0.0-20180315140547-d46933a94f05 // indirect
-	github.com/flashmob/go-guerrilla v0.0.0-20190130124619-cb550348c44e
+	github.com/flashmob/go-guerrilla v0.0.0-20190403051904-d48dee028492
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/golang/mock v1.2.0 // indirect
 	github.com/pkg/errors v0.8.1
@@ -18,5 +18,3 @@ require (
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
-
-replace github.com/flashmob/go-guerrilla => github.com/codestation/go-guerrilla v0.0.0-20190331145559-b860b81baef5
