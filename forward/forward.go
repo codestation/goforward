@@ -113,6 +113,10 @@ var Processor = func() backends.Decorator {
 					for i := range e.RcptTo {
 						err := forwarder.validateRcpt(e.RcptTo[i])
 						if err != nil {
+							log.WithFields(log.Fields{
+								"email": e.RcptTo[i],
+								"error": err.Error(),
+							}).Info("Failed to validate recipient")
 							return backends.NewResult(response.Canned.SuccessVerifyCmd), err
 						}
 					}
