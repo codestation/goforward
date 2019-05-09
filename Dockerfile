@@ -5,12 +5,12 @@ ARG BUILD_NUMBER
 ARG BUILD_COMMIT_SHORT
 ARG CI_BUILD_CREATED
 ENV GO111MODULE on
-
-WORKDIR /app
+ENV CGO_ENABLED 0
+WORKDIR /src
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o release/goforward \
+RUN go build -o release/goforward \
    -mod vendor -ldflags "-w -s \
    -X main.Version=${CI_TAG} \
    -X main.BuildNumber=${BUILD_NUMBER} \
@@ -22,6 +22,6 @@ LABEL maintainer="codestation <codestation404@gmail.com>"
 
 RUN apk add --no-cache ca-certificates tzdata
 
-COPY --from=builder /app/release/goforward /bin/goforward
+COPY --from=builder /src/release/goforward /bin/goforward
 
 ENTRYPOINT ["/bin/goforward"]
