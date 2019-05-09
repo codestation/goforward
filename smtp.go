@@ -21,7 +21,9 @@ package main
 import (
 	"os"
 	"os/signal"
+	"path"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -29,6 +31,7 @@ import (
 	"github.com/flashmob/go-guerrilla/backends"
 	slog "github.com/flashmob/go-guerrilla/log"
 	"github.com/flashmob/go-guerrilla/tests/testcert"
+	maildir "github.com/flashmob/maildir-processor"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"megpoid.xyz/go/goforward/forward"
@@ -44,6 +47,26 @@ type smtpConfig struct {
 	tls         bool
 	privateKey  string
 	publicKey   string
+	mailDir     string
+}
+
+func maildirMap(aliasesmap string) (string, error) {
+	aliases := strings.Split(aliasesmap, ",")
+	var maildirs []string
+
+	for i := range aliases {
+		u := strings.Split(aliases[i], "=")
+		if len(u) != 2 {
+			return "", errors.Errorf("entry %s isn't on the key=value format", aliases[i])
+		}
+
+		names := strings.Split(u[0], ":")
+
+		for j := range names {
+			maildirs = append(maildirs, names[j]+"=-1:-1")
+		}
+	}
+	return strings.Join(maildirs, ","), nil
 }
 
 func runSMTPServer(smtpConfig smtpConfig) error {
@@ -119,6 +142,19 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 		"forwarder_token":       smtpConfig.token,
 	}
 
+	if smtpConfig.mailDir != "" {
+		mailDirPath := path.Join(smtpConfig.mailDir, "[user]", "Maildir")
+		userMap, err := maildirMap(smtpConfig.aliases)
+		if err != nil {
+			return errors.Wrap(err, "failed to prepare maildir from user aliases")
+		}
+
+		bcfg["save_process"] = bcfg["save_process"].(string) + "|MailDir"
+		bcfg["validate_processors"] = bcfg["validate_processors"].(string) + "|MailDir"
+		bcfg["maildir_user_map"] = userMap
+		bcfg["maildir_path"] = mailDirPath
+	}
+
 	if smtpConfig.debug {
 		cfg.LogLevel = slog.DebugLevel.String()
 	} else {
@@ -128,6 +164,7 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 	cfg.BackendConfig = bcfg
 	d := guerrilla.Daemon{Config: cfg}
 	d.AddProcessor("Forwarder", forward.Processor)
+	d.AddProcessor("MailDir", maildir.Processor)
 
 	if err := d.Start(); err == nil {
 		log.Printf("SMTP server started on %s", smtpConfig.listen)

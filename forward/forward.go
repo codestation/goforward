@@ -69,7 +69,7 @@ func aliasesmap(aliasesmap string) (map[string][]string, error) {
 	for i := range aliases {
 		u := strings.Split(aliases[i], "=")
 		if len(u) != 2 {
-			return nil, errors.Errorf("entry %s ifn't on the key=value format", aliases[i])
+			return nil, errors.Errorf("entry %s isn't on the key=value format", aliases[i])
 		}
 
 		names := strings.Split(u[0], ":")
@@ -117,7 +117,7 @@ var Processor = func() backends.Decorator {
 								"email": e.RcptTo[i],
 								"error": err.Error(),
 							}).Info("Failed to validate recipient")
-							return backends.NewResult(response.Canned.SuccessVerifyCmd), err
+							return backends.NewResult(response.Canned.FailRcptCmd), err
 						}
 					}
 

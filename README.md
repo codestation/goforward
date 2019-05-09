@@ -20,6 +20,7 @@ Every command-line option has their corresponding environment variable to config
   else this will be ignored.
 * `--public-key, -K, PUBLIC_KEY_FILE`: Path where the public key is stored. The `private-key` must also be defined,
   else this will be ignored.
+* `--maildir, -m, MAILDIR_PATH`: The received emails will be stored in the specified directory.
 * `--debug, -d ,DEBUG`: Enables debug logging.
 
 ## Get the credentials.json file

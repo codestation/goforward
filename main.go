@@ -45,6 +45,7 @@ func run(c *cli.Context) error {
 		tls:         c.Bool("tls"),
 		privateKey:  c.String("private-key"),
 		publicKey:   c.String("public-key"),
+		mailDir:     c.String("maildir"),
 	}
 
 	return runSMTPServer(cfg)
@@ -135,6 +136,11 @@ func main() {
 			Name:   "debug, d",
 			Usage:  "enable debug logging",
 			EnvVar: "DEBUG",
+		},
+		cli.StringFlag{
+			Name:   "maildir, m",
+			Usage:  "save received email in Maildir",
+			EnvVar: "MAILDIR_PATH",
 		},
 	}
 
