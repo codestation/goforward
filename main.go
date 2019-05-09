@@ -113,7 +113,7 @@ func main() {
 		},
 		cli.BoolFlag{
 			Name:   "request, r",
-			Usage:  "request oeauth token",
+			Usage:  "request oauth token",
 			EnvVar: "REQUEST_TOKEN",
 		},
 		cli.BoolFlag{
