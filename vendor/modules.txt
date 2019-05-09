@@ -2,7 +2,7 @@
 cloud.google.com/go/compute/metadata
 # github.com/asaskevich/EventBus v0.0.0-20180315140547-d46933a94f05
 github.com/asaskevich/EventBus
-# github.com/flashmob/go-guerrilla v0.0.0-20190403051904-d48dee028492
+# github.com/flashmob/go-guerrilla v0.0.0-20190504150445-87453fe54c89
 github.com/flashmob/go-guerrilla
 github.com/flashmob/go-guerrilla/backends
 github.com/flashmob/go-guerrilla/log
@@ -22,13 +22,13 @@ github.com/hashicorp/golang-lru/simplelru
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
-# github.com/sirupsen/logrus v1.4.0
+# github.com/sirupsen/logrus v1.4.1
 github.com/sirupsen/logrus
-# github.com/skratchdot/open-golang v0.0.0-20190104022628-a2dfa6d0dab6
+# github.com/skratchdot/open-golang v0.0.0-20190402232053-79abb63cd66e
 github.com/skratchdot/open-golang/open
 # github.com/urfave/cli v1.20.0
 github.com/urfave/cli
-# go.opencensus.io v0.19.2
+# go.opencensus.io v0.21.0
 go.opencensus.io/plugin/ochttp
 go.opencensus.io/plugin/ochttp/propagation/b3
 go.opencensus.io/stats
@@ -36,19 +36,19 @@ go.opencensus.io/stats/view
 go.opencensus.io/tag
 go.opencensus.io/trace
 go.opencensus.io/trace/propagation
-go.opencensus.io/exemplar
+go.opencensus.io/metric/metricdata
 go.opencensus.io/stats/internal
 go.opencensus.io/internal/tagencoding
+go.opencensus.io/metric/metricproducer
 go.opencensus.io/internal
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/tracestate
+go.opencensus.io/resource
 go.opencensus.io
-# golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-golang.org/x/crypto/ssh/terminal
 # golang.org/x/lint v0.0.0-20190301231843-5614ed5bae6f
 golang.org/x/lint/golint
 golang.org/x/lint
-# golang.org/x/net v0.0.0-20190326090315-15845e8f865b
+# golang.org/x/net v0.0.0-20190311183353-d8887717615a
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/context
 golang.org/x/net/trace
@@ -57,7 +57,7 @@ golang.org/x/net/http2
 golang.org/x/net/http2/hpack
 golang.org/x/net/http/httpguts
 golang.org/x/net/idna
-# golang.org/x/oauth2 v0.0.0-20190319182350-c85d3e98c914
+# golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a
 golang.org/x/oauth2
 golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
@@ -65,7 +65,6 @@ golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
 # golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a
 golang.org/x/sys/unix
-golang.org/x/sys/windows
 # golang.org/x/text v0.3.0
 golang.org/x/text/secure/bidirule
 golang.org/x/text/unicode/bidi
@@ -75,7 +74,7 @@ golang.org/x/text/transform
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/internal/gcimporter
-# google.golang.org/api v0.3.0
+# google.golang.org/api v0.5.0
 google.golang.org/api/gmail/v1
 google.golang.org/api/option
 google.golang.org/api/gensupport
