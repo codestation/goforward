@@ -30,7 +30,8 @@ steps:
         - BUILD_COMMIT_SHORT=${DRONE_COMMIT_SHA:0:8}
         - CI_BUILD_CREATED=${DRONE_BUILD_CREATED}
       registry: registry.megpoid.xyz
-      username: admin
+      username:
+        from_secret: docker_username
       password:
         from_secret: docker_password
     when:
