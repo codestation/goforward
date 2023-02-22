@@ -58,10 +58,10 @@ func initialize(c *cli.Context) error {
 	log.SetOutput(os.Stdout)
 
 	log.WithFields(log.Fields{
-		"version":     Version,
-		"commit":      Commit,
-		"built":       BuildTime,
-		"compilation": BuildNumber,
+		"version":     Tag,
+		"commit":      Revision,
+		"date":        LastCommit,
+		"clean build": Modified,
 	}).Info("GoForward")
 
 	return nil
@@ -70,16 +70,16 @@ func initialize(c *cli.Context) error {
 func printVersion(c *cli.Context) {
 	_, _ = fmt.Fprintf(c.App.Writer, `GoForward
 Version:      %s
-Git commit:   %s
-Built:        %s
-Compilation:  %s
-`, Version, Commit, BuildTime, BuildNumber)
+Commit:       %s
+Date:         %s
+Clean build:  %t
+`, Tag, Revision, LastCommit, Modified)
 }
 
 func main() {
 	app := cli.NewApp()
 	app.Usage = "forwards email to a Gmail account"
-	app.Version = Version
+	app.Version = Tag
 	cli.VersionPrinter = printVersion
 
 	app.Flags = []cli.Flag{
