@@ -25,7 +25,6 @@ import (
 	"github.com/flashmob/go-guerrilla/backends"
 	"github.com/flashmob/go-guerrilla/mail"
 	"github.com/flashmob/go-guerrilla/response"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -56,7 +55,7 @@ func newForwarder(config *forwardConfig) (*forwarder, error) {
 	m.config = config
 	m.aliases, err = aliasesmap(m.config.AliasesMap)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build aliases map")
+		return nil, fmt.Errorf("failed to build aliases map :%w", err)
 	}
 
 	return m, nil
@@ -69,7 +68,7 @@ func aliasesmap(aliasesmap string) (map[string][]string, error) {
 	for i := range aliases {
 		u := strings.Split(aliases[i], "=")
 		if len(u) != 2 {
-			return nil, errors.Errorf("entry %s ifn't on the key=value format", aliases[i])
+			return nil, fmt.Errorf("entry %s ifn't on the key=value format", aliases[i])
 		}
 
 		names := strings.Split(u[0], ":")
@@ -78,9 +77,7 @@ func aliasesmap(aliasesmap string) (map[string][]string, error) {
 			addresses := strings.Split(u[1], ":")
 			name := strings.ToLower(names[j])
 
-			for k := range addresses {
-				ret[name] = append(ret[name], addresses[k])
-			}
+			ret[name] = append(ret[name], addresses...)
 		}
 	}
 	return ret, nil

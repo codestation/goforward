@@ -19,6 +19,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -29,9 +30,8 @@ import (
 	"github.com/flashmob/go-guerrilla/backends"
 	slog "github.com/flashmob/go-guerrilla/log"
 	"github.com/flashmob/go-guerrilla/tests/testcert"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"megpoid.xyz/go/goforward/forward"
+	"megpoid.dev/go/goforward/forward"
 )
 
 type smtpConfig struct {
@@ -132,7 +132,7 @@ func runSMTPServer(smtpConfig smtpConfig) error {
 	if err := d.Start(); err == nil {
 		log.Printf("SMTP server started on %s", smtpConfig.listen)
 	} else {
-		return errors.Wrap(err, "failed to start smtp server")
+		return fmt.Errorf("failed to start smtp server: %w", err)
 	}
 
 	interrupt := make(chan os.Signal, 1)

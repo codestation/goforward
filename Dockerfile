@@ -1,24 +1,24 @@
-FROM golang:1.12-alpine as builder
+FROM golang:1.20-alpine as builder
 
-ARG CI_TAG
-ARG BUILD_NUMBER
-ARG BUILD_COMMIT_SHORT
-ARG CI_BUILD_CREATED
-ENV GO111MODULE on
-ENV CGO_ENABLED 0
+ARG CI_COMMIT_TAG
+ARG GOPROXY
+ENV GOPROXY=${GOPROXY}
+
+RUN apk add --no-cache git
+
 WORKDIR /src
+COPY go.mod go.sum /src/
+RUN go mod download
+COPY . /src/
 
-COPY . .
+RUN set -ex; \
+    CGO_ENABLED=0 go build -o release/goforward \
+    -trimpath \
+    -ldflags "-w -s \
+    -X main.Tag=${CI_COMMIT_TAG}"
 
-RUN go build -o release/goforward \
-   -mod vendor -ldflags "-w -s \
-   -X main.Version=${CI_TAG} \
-   -X main.BuildNumber=${BUILD_NUMBER} \
-   -X main.Commit=${BUILD_COMMIT_SHORT} \
-   -X main.BuildTime=${CI_BUILD_CREATED}"
-
-FROM alpine:3.9
-LABEL maintainer="codestation <codestation404@gmail.com>"
+FROM alpine:3.17
+LABEL maintainer="codestation <codestation@megpoid.dev>"
 
 RUN apk add --no-cache ca-certificates tzdata
 

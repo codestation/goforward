@@ -24,7 +24,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"megpoid.xyz/go/goforward/forward"
+	"megpoid.dev/go/goforward/forward"
 )
 
 func run(c *cli.Context) error {

@@ -10,7 +10,7 @@ Every command-line option has their corresponding environment variable to config
 * `--listen, -l, LISTEN`:  Address and port to listen to incoming requests, defaults to `:2525`.
 * `--allowed-host, -H, ALLOWED_HOST`: Only accept emails from the specified domain, for example `example.com`.
 * `--aliases, -a, ALIASES`: Map allowed usernames to email accounts. For example `admin:noreply:info=myuser@gmail.com`
-   will accept emails emails from `admin@example.com`, `noreply@example.com`, `info@example.com` and inject them to the
+   will accept emails from `admin@example.com`, `noreply@example.com`, `info@example.com` and inject them to the
    `myuser@gmail.com` inbox. Gmail also accepts `me` as a valid email address.
 * `--credentials, -C, CREDENTIALS_FILE`: OAuth2 credentials for the Gmail account in a json file.
 * `--token, -T, TOKEN_FILE`: Authorization token in a json file. This can be requested by the `--request` command.

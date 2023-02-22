@@ -23,13 +23,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/flashmob/go-guerrilla/mail"
-	"github.com/pkg/errors"
+	"github.com/pkg/browser"
 	log "github.com/sirupsen/logrus"
-	"github.com/skratchdot/open-golang/open"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/gmail/v1"
@@ -46,7 +44,7 @@ type GmailConfig struct {
 func RequestToken(config GmailConfig) error {
 	credConfig, err := readClientSecret(config.CredentialsPath)
 	if err != nil {
-		return errors.Wrap(err, "failed to read credentials")
+		return fmt.Errorf("failed to read credentials :%w", err)
 	}
 
 	token := getTokenFromWeb(credConfig)
@@ -59,7 +57,7 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	fmt.Printf("Go to the following link in your browser then type the "+
 		"authorization code: \n%v\nAuthorization code: ", authURL)
 
-	err := open.Start(authURL)
+	err := browser.OpenURL(authURL)
 	if err != nil {
 		log.Debugf("Failed to open the auth URL on the browser: %v", err)
 	}
@@ -93,14 +91,14 @@ func saveToken(path string, token *oauth2.Token) error {
 	log.Debugf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
-		return errors.Wrapf(err, "unable to cache oauth token")
+		return fmt.Errorf("unable to cache oauth token :%w", err)
 	}
 
 	defer f.Close()
 
 	err = json.NewEncoder(f).Encode(token)
 	if err != nil {
-		return errors.Wrap(err, "cannot encode token to json")
+		return fmt.Errorf("cannot encode token to json :%w", err)
 	}
 
 	return nil
@@ -118,14 +116,14 @@ func makeMessage(e *mail.Envelope) *gmail.Message {
 func readClientSecret(configFile string) (*oauth2.Config, error) {
 	var config *oauth2.Config
 
-	bytes, err := ioutil.ReadFile(configFile)
+	bytes, err := os.ReadFile(configFile)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to read client secret file")
+		return nil, fmt.Errorf("unable to read client secret file :%w", err)
 	}
 
 	config, err = google.ConfigFromJSON(bytes, gmail.GmailInsertScope)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to parse client secret file to config")
+		return nil, fmt.Errorf("unable to parse client secret file to config :%w", err)
 	}
 
 	return config, nil
@@ -134,12 +132,12 @@ func readClientSecret(configFile string) (*oauth2.Config, error) {
 func newGmailService(config GmailConfig) (*gmail.Service, error) {
 	credConfig, err := readClientSecret(config.CredentialsPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot read client secret")
+		return nil, fmt.Errorf("cannot read client secret :%w", err)
 	}
 
 	token, err := tokenFromFile(config.TokenPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot read client token")
+		return nil, fmt.Errorf("cannot read client token :%w", err)
 	}
 
 	ctx := context.Background()
